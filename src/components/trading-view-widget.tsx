@@ -4,9 +4,10 @@ import { memo, useEffect, useRef, useState, useId } from "react";
 
 interface TradingViewWidgetProps {
   ticker: string;
+  interval?: string;
 }
 
-const TradingViewWidgetComponent = ({ ticker }: TradingViewWidgetProps) => {
+const TradingViewWidgetComponent = ({ ticker, interval = "D" }: TradingViewWidgetProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const isScriptAppended = useRef(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -24,9 +25,9 @@ const TradingViewWidgetComponent = ({ ticker }: TradingViewWidgetProps) => {
       new (window as any).TradingView.widget({
         autosize: true,
         symbol: ticker,
-        interval: "D",
+        interval: interval,
         timezone: "Etc/UTC",
-        theme: "light",
+        theme: "dark",
         style: "1",
         locale: "en",
         enable_publishing: false,
@@ -69,7 +70,7 @@ const TradingViewWidgetComponent = ({ ticker }: TradingViewWidgetProps) => {
         observer?.disconnect();
     }
 
-  }, [ticker, containerId]);
+  }, [ticker, interval, containerId]);
 
   return (
     <div className="relative h-full w-full rounded-lg shadow-md bg-card overflow-hidden transition-all duration-300">

@@ -7,6 +7,7 @@ import { TradingViewWidget } from '@/components/trading-view-widget';
 
 export default function Home() {
   const [ticker, setTicker] = useState('AAPL');
+  const [interval, setInterval] = useState('D');
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -19,11 +20,25 @@ export default function Home() {
           setTicker(recent[0]);
         }
       }
+      const storedInterval = localStorage.getItem('tradingViewInterval');
+      if (storedInterval) {
+        setInterval(storedInterval);
+      }
     } catch (error) {
-      console.error("Could not get initial ticker from localStorage", error);
+      console.error("Could not get initial state from localStorage", error);
       setTicker('AAPL'); // fallback
+      setInterval('D');
     }
   }, []);
+
+  const handleIntervalChange = (newInterval: string) => {
+    setInterval(newInterval);
+    try {
+      localStorage.setItem('tradingViewInterval', newInterval);
+    } catch (error) {
+      console.error("Failed to save interval to localStorage", error);
+    }
+  }
 
   if (!isMounted) {
     return null; // or a loading spinner
@@ -41,11 +56,16 @@ export default function Home() {
       <main className="flex-1 container mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-3 xl:col-span-2">
           <div className="sticky top-24">
-            <TickerSelector onTickerSelect={setTicker} initialTicker={ticker} />
+            <TickerSelector 
+              onTickerSelect={setTicker} 
+              initialTicker={ticker}
+              onIntervalSelect={handleIntervalChange}
+              initialInterval={interval}
+            />
           </div>
         </div>
         <div className="lg:col-span-9 xl:col-span-10 h-[65vh] lg:h-[calc(100vh-10rem)]">
-          <TradingViewWidget ticker={ticker} />
+          <TradingViewWidget ticker={ticker} interval={interval} />
         </div>
       </main>
       
