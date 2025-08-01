@@ -133,7 +133,7 @@ export default function Home() {
                       <div className="space-y-4">
                         <h3 className="font-semibold text-lg flex items-center"><TrendingUp className="mr-2" /> Technicals</h3>
                         <div className="text-sm space-y-2">
-                           <p><strong>Trend:</strong> <Badge variant={analysis.technicalAnalysis.trend.toLowerCase() === 'bullish' ? 'default' : analysis.technicalAnalysis.trend.toLowerCase() === 'bearish' ? 'destructive' : 'secondary'}>{analysis.technicalAnalysis.trend}</Badge></p>
+                           <div className="flex items-center gap-2"><strong>Trend:</strong> <Badge variant={analysis.technicalAnalysis.trend.toLowerCase() === 'bullish' ? 'default' : analysis.technicalAnalysis.trend.toLowerCase() === 'bearish' ? 'destructive' : 'secondary'}>{analysis.technicalAnalysis.trend}</Badge></div>
                           <p><strong>Support:</strong> {analysis.technicalAnalysis.support}</p>
                           <p><strong>Resistance:</strong> {analysis.technicalAnalysis.resistance}</p>
                           {analysis.technicalAnalysis.patterns.length > 0 && (
