@@ -39,12 +39,12 @@ export default function Home() {
       </header>
 
       <main className="flex-1 container mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-4 xl:col-span-3">
+        <div className="lg:col-span-3 xl:col-span-2">
           <div className="sticky top-24">
             <TickerSelector onTickerSelect={setTicker} initialTicker={ticker} />
           </div>
         </div>
-        <div className="lg:col-span-8 xl:col-span-9 h-[65vh] lg:h-[calc(100vh-10rem)]">
+        <div className="lg:col-span-9 xl:col-span-10 h-[65vh] lg:h-[calc(100vh-10rem)]">
           <TradingViewWidget ticker={ticker} />
         </div>
       </main>
