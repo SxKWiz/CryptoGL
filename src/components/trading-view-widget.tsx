@@ -36,6 +36,7 @@ const TradingViewWidgetComponent = ({ ticker, interval = "D" }: TradingViewWidge
         container_id: containerId,
         details: true,
         withdateranges: true,
+        hide_last_price: true,
       });
     };
 
