@@ -5,11 +5,15 @@ import { useState, useEffect } from 'react';
 import { LineChart, Sparkles, TrendingUp, TrendingDown, Minus, Landmark, Newspaper, Shapes } from 'lucide-react';
 import { TickerSelector } from '@/components/ticker-selector';
 import { TradingViewWidget } from '@/components/trading-view-widget';
+import { Watchlist } from '@/components/watchlist';
+import { PortfolioTracker } from '@/components/portfolio-tracker';
+import { ExportAnalysis } from '@/components/export-analysis';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { analyzeChart, AnalyzeChartOutput } from '@/ai/flows/analyze-chart-flow';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 export default function Home() {
   const [ticker, setTicker] = useState('AAPL');
@@ -86,9 +90,12 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       <header className="p-4 border-b bg-card/50 backdrop-blur-sm sticky top-0 z-20">
-        <div className="container mx-auto flex items-center gap-3">
-          <LineChart className="h-7 w-7 text-primary" />
-          <h1 className="text-2xl font-bold font-headline tracking-tight">Chart Glance</h1>
+        <div className="container mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <LineChart className="h-7 w-7 text-primary" />
+            <h1 className="text-2xl font-bold font-headline tracking-tight">Chart Glance</h1>
+          </div>
+          <ThemeToggle />
         </div>
       </header>
 
@@ -105,6 +112,8 @@ export default function Home() {
               <Sparkles className="mr-2 h-4 w-4" />
               {isLoadingAnalysis ? 'Analyzing...' : 'Analyze with AI'}
             </Button>
+            <Watchlist currentTicker={ticker} onTickerSelect={handleTickerChange} />
+            <PortfolioTracker currentTicker={ticker} onTickerSelect={handleTickerChange} />
           </div>
         </div>
         <div className="lg:col-span-8 xl:col-span-9 flex flex-col gap-6">
@@ -114,8 +123,15 @@ export default function Home() {
           {(isLoadingAnalysis || error || analysis) && (
             <Card>
               <CardHeader>
-                <CardTitle>AI Analysis for {ticker}</CardTitle>
-                <CardDescription>A comprehensive overview powered by AI.</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>AI Analysis for {ticker}</CardTitle>
+                    <CardDescription>A comprehensive overview powered by AI.</CardDescription>
+                  </div>
+                  {analysis && !isLoadingAnalysis && (
+                    <ExportAnalysis analysis={analysis} ticker={ticker} interval={interval} />
+                  )}
+                </div>
               </CardHeader>
               <CardContent>
                 {isLoadingAnalysis && <p className="animate-pulse">Analyzing chart...</p>}
