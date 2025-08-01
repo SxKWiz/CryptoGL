@@ -1,14 +1,19 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { LineChart } from 'lucide-react';
+import { LineChart, Sparkles } from 'lucide-react';
 import { TickerSelector } from '@/components/ticker-selector';
 import { TradingViewWidget } from '@/components/trading-view-widget';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { analyzeChart } from '@/ai/flows/analyze-chart-flow';
 
 export default function Home() {
   const [ticker, setTicker] = useState('AAPL');
   const [interval, setInterval] = useState('D');
   const [isMounted, setIsMounted] = useState(false);
+  const [analysis, setAnalysis] = useState<string | null>(null);
+  const [isLoadingAnalysis, setIsLoadingAnalysis] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -38,7 +43,26 @@ export default function Home() {
     } catch (error) {
       console.error("Failed to save interval to localStorage", error);
     }
+  };
+  
+  const handleTickerChange = (newTicker: string) => {
+    setTicker(newTicker);
+    setAnalysis(null);
   }
+
+  const handleAnalysis = async () => {
+    setIsLoadingAnalysis(true);
+    setAnalysis(null);
+    try {
+      const result = await analyzeChart({ ticker, interval });
+      setAnalysis(result.analysis);
+    } catch (error) {
+      console.error("Failed to analyze chart", error);
+      setAnalysis("Sorry, I was unable to analyze the chart at this time.");
+    } finally {
+      setIsLoadingAnalysis(false);
+    }
+  };
 
   if (!isMounted) {
     return null; // or a loading spinner
@@ -55,17 +79,43 @@ export default function Home() {
 
       <main className="flex-1 container mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-3 xl:col-span-2">
-          <div className="sticky top-24">
+          <div className="sticky top-24 space-y-4">
             <TickerSelector 
-              onTickerSelect={setTicker} 
+              onTickerSelect={handleTickerChange} 
               initialTicker={ticker}
               onIntervalSelect={handleIntervalChange}
               initialInterval={interval}
             />
+            <Button onClick={handleAnalysis} disabled={isLoadingAnalysis} className="w-full">
+              <Sparkles className="mr-2 h-4 w-4" />
+              {isLoadingAnalysis ? 'Analyzing...' : 'Analyze with AI'}
+            </Button>
           </div>
         </div>
-        <div className="lg:col-span-9 xl:col-span-10 h-[65vh] lg:h-[calc(100vh-10rem)]">
-          <TradingViewWidget ticker={ticker} interval={interval} />
+        <div className="lg:col-span-9 xl:col-span-10 flex flex-col gap-6">
+          <div className="h-[65vh] lg:h-[calc(100vh-10rem)]">
+            <TradingViewWidget ticker={ticker} interval={interval} />
+          </div>
+          {isLoadingAnalysis && (
+            <Card>
+              <CardHeader>
+                <CardTitle>AI Analysis</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="animate-pulse">Analyzing chart...</p>
+              </CardContent>
+            </Card>
+          )}
+          {analysis && !isLoadingAnalysis && (
+            <Card>
+              <CardHeader>
+                <CardTitle>AI Analysis for {ticker}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm">{analysis}</p>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </main>
       
