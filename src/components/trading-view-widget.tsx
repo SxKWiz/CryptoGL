@@ -36,7 +36,7 @@ const TradingViewWidgetComponent = ({ ticker, interval = "D" }: TradingViewWidge
         container_id: containerId,
         details: true,
         withdateranges: true,
-        hide_price_line: true,
+        studies: [],
       });
     };
 
